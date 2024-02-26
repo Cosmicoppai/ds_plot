@@ -3,12 +3,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from collections import defaultdict
 import datetime
+import time
 
 
-def plot_time_vs_status(data: List[Tuple[int, int]], output_file_name: str, time_window: int = 24) -> None:
+def plot_time_vs_status(data: List[Tuple[int, int]], output_file_name: str, time_window: int = 24, current_time=int(time.time())) -> None:
     timestamps, http_status_codes = zip(*data)
-
-    current_time = 1707499900  # int(time.time())  # current time in seconds since the epoch, as an integer
 
     filtered_data = [(ts, code) for ts, code in zip(timestamps, http_status_codes) if (ts < current_time and current_time - ts <= time_window * 3600)]
 
