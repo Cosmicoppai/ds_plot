@@ -16,7 +16,7 @@ def parse_apache_log(logs: List[str]) -> List[Tuple[str, str]]:
             # convert the timestamp into time since epoch
             timestamp = datetime.strptime(parts[3][1:] + ' ' + parts[4][:-1], '%d/%b/%Y:%H:%M:%S %z').timestamp()
             status_code = parts[8]
-            log_output.append((timestamp, int(status_code)))
+            log_output.append((int(timestamp), int(status_code)))
         except Exception as e:
             print(e)
             log_output.append(("ERROR", "ERROR"))
