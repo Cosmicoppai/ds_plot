@@ -17,6 +17,8 @@ def parse_apache_log(logs: List[str]) -> List[Tuple[int, int]]:
 
     for idx, log in enumerate(logs):
         try:
+            if not log:
+                continue
             parsed_log = PARSER.parse(log)
             if idx == 0:
                 TZ.time_zone_offset = int(parsed_log.request_time.utcoffset().total_seconds())
@@ -53,7 +55,7 @@ def main():
     parsed_log_data = list(filter(lambda x: x[0] != "ERROR" and x[1] != "ERROR", parsed_log_data))
 
     # @TODO: @CosmicOppai Remove hardcoded current_time
-    plot_time_vs_status(parsed_log_data, output_file_name, time_window, 1707519602, TZ)
+    plot_time_vs_status(parsed_log_data, output_file_name, time_window, 1707519602, TZ, time_res)
 
 
 if __name__ == "__main__":
