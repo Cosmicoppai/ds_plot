@@ -55,7 +55,7 @@ def plot_time_vs_status(data: List[Tuple[int, int]], output_file_name: str, time
         for code, counts in status_count_per_ts.items():
             ax.plot(x, counts, label=f'HTTP {code}')
     except Exception as e:
-        print(e)
+        LOGGER.error(e)
 
     ax.set_xlabel('Time')
     ax.set_ylabel('Status Count')
