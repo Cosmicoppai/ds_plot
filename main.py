@@ -35,15 +35,17 @@ def parse_apache_log(logs: List[str]) -> List[Tuple[int, int]]:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--filename", required=True, help="Log File name to read logs")
-    parser.add_argument("--time_window", required=False, help="Size of time window")
-    parser.add_argument("--output", required=False, help="Output file name")
-    parser.add_argument("--current_time", required=False, help="current time in epoch format")
+    parser.add_argument("--time_window", required=False, help="Size of time window", default=24)
+    parser.add_argument("--output", required=False, help="Output file name", default="plot_output")
+    parser.add_argument("--current_time", required=False, help="current time in epoch format", default=int(time.time()))
+    parser.add_argument("--time_res", required=False, help="Time Resolution in seconds", default=120)
     args = parser.parse_args()
 
     file_name = args.filename
-    output_file_name = args.output if args.output else "plot_output"
-    time_window = int(args.time_window) if args.time_window else 24
-    current_time = int(args.current_time) if args.current_time else int(time.time())
+    output_file_name = args.output
+    time_window = args.time_window
+    current_time = args.current_time
+    time_res = args.time_res
 
     with open(file_name, "r") as file:
         file_data = file.read()

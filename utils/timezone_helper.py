@@ -1,7 +1,10 @@
-from datetime import datetime, timedelta, tzinfo
+from datetime import timedelta, tzinfo
 
 
 class LogTimeZone(tzinfo):
+    """
+    A class to represent the timezone of the log file.
+    """
     def __init__(self, time_zone_offset: int = 0):
         self.time_zone_offset = time_zone_offset
         super().__init__()
