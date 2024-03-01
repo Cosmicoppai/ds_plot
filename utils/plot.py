@@ -6,6 +6,7 @@ from collections import defaultdict
 import datetime
 import time
 from utils.logger import LOGGER
+import heapq
 
 
 def plot_time_vs_status(data: List[Tuple[int, int]], output_file_name: str, time_window_in_hrs: int = 24, current_time=int(time.time()), timezone=datetime.timezone.utc, time_res_in_sec=120) -> None:
@@ -51,11 +52,13 @@ def plot_time_vs_status(data: List[Tuple[int, int]], output_file_name: str, time
 
     x = [datetime.datetime.fromtimestamp(ts, timezone) for ts in np.arange(start_range, end_range, step)]
 
-    try:
-        for code, counts in status_count_per_ts.items():
-            ax.plot(x, counts, label=f'HTTP {code}')
-    except Exception as e:
-        LOGGER.error(e)
+    status_frequency = {code: sum(counts) for code, counts in status_count_per_ts.items()}
+    second_most_frequent_code = heapq.nlargest(2, status_frequency, key=status_frequency.get)[-1]
+
+    for code, counts in status_count_per_ts.items():
+        ax.plot(x, counts, label=f'HTTP {code}')
+        if code == second_most_frequent_code:
+            ax.fill_between(x, 0, counts, alpha=0.3, color=['orange'])  # Fill the area under the curve
 
     ax.set_xlabel('Time')
     ax.set_ylabel('Status Count')
