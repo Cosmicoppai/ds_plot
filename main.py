@@ -40,7 +40,7 @@ def main():
     parser.add_argument("--time_window", required=False, help="Size of time window", default=24)
     parser.add_argument("--output", required=False, help="Output file name", default="plot_output")
     parser.add_argument("--current_time", required=False, help="current time in epoch format", default=int(time.time()))
-    parser.add_argument("--time_res", required=False, help="Time Resolution in seconds", default=120)
+    parser.add_argument("--time_res", required=False, help="Time Resolution in seconds", default=3600)
     args = parser.parse_args()
 
     file_name = args.filename
@@ -55,7 +55,7 @@ def main():
     parsed_log_data = list(filter(lambda x: x[0] != "ERROR" and x[1] != "ERROR", parsed_log_data))
 
     # @TODO: @CosmicOppai Remove hardcoded current_time
-    plot_time_vs_status(parsed_log_data, output_file_name, time_window, 1707519602, TZ, time_res)
+    plot_time_vs_status(parsed_log_data, output_file_name, time_window, 1709074801, TZ, time_res)
 
 
 if __name__ == "__main__":

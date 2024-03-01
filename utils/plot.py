@@ -62,6 +62,8 @@ def plot_time_vs_status(data: List[Tuple[int, int]], output_file_name: str, time
     ax.set_title(f'HTTP Status Codes vs. Time in the Last {time_window_in_hrs} Hours')
     ax.legend()
 
+    ax.margins(x=0, y=0)
+
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d %H:%M', timezone))
 
     mng = plt.get_current_fig_manager()
