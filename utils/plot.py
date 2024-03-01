@@ -9,7 +9,9 @@ from utils.logger import LOGGER
 import heapq
 
 
-def plot_time_vs_status(data: List[Tuple[int, int]], output_file_name: str, time_window_in_hrs: int = 24, current_time=int(time.time()), timezone=datetime.timezone.utc, time_res_in_sec=120) -> None:
+def plot_time_vs_status(data: List[Tuple[int, int]], output_file_name: str, time_window_in_hrs: int = 24,
+                        current_time=int(time.time()), timezone=datetime.timezone.utc, time_res_in_sec=120) -> None:
+
     """
     data : [(timestamp, http_status_code), ...] List of timestamp and http status code tuples
     output_file_name : "plot_output" (name of the output file)
