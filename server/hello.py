@@ -1,7 +1,7 @@
 from sanic import Sanic, text, html, HTTPResponse, file, log
 from os import path
 from pathlib import Path
-from middleware import authorize
+from .middleware import authorize
 from plotter import IMG_DIR
 
 app = Sanic("LogRate", configure_logging=True)
@@ -44,7 +44,3 @@ async def get_graph(request, file_name: str) -> HTTPResponse:
         return text('File does not exists')
 
     return await file(_file)
-
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, access_log=True)

@@ -1,5 +1,5 @@
 from sanic import Request
-from exceptions import InvalidAuthError
+from .exceptions import InvalidAuthError
 import base64
 
 

@@ -5,7 +5,7 @@ import numpy as np
 from collections import defaultdict
 import datetime
 import time
-from plotter.utils.logger import LOGGER
+from .logger import LOGGER
 import heapq
 from pathlib import Path
 

@@ -1,1 +1,1 @@
-from plotter.utils.plot import IMG_DIR
+from .utils.plot import IMG_DIR
