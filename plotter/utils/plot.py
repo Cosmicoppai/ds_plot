@@ -5,8 +5,11 @@ import numpy as np
 from collections import defaultdict
 import datetime
 import time
-from utils.logger import LOGGER
+from plotter.utils.logger import LOGGER
 import heapq
+from pathlib import Path
+
+IMG_DIR = Path(__file__).parent.parent.joinpath('./graphs')
 
 
 def plot_time_vs_status(data: List[Tuple[int, int]], output_file_name: str, time_window_in_hrs: int = 24,
@@ -76,7 +79,7 @@ def plot_time_vs_status(data: List[Tuple[int, int]], output_file_name: str, time
     figure = plt.gcf()
     figure.set_size_inches(18.5, 10.5)
 
-    figure.savefig(output_file_name, bbox_inches='tight', dpi=100)
+    figure.savefig(IMG_DIR.joinpath(output_file_name), bbox_inches='tight', dpi=100)
 
     # Show the plot
     plt.show()

@@ -3,15 +3,15 @@ from os import path
 from pathlib import Path
 from middleware import authorize
 import logging
+from plotter import IMG_DIR
 
 
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
-app = Sanic("LogRate")
+app = Sanic("LogRate", configure_logging=True)
 
 CURR_PATH = Path(__file__).parent
-IMG_DIR = CURR_PATH.parent.joinpath('plotter/graphs')
 
 # register middleware
 app.register_middleware(authorize, "request")  # attach this middleware to request
@@ -31,8 +31,8 @@ async def index(request) -> HTTPResponse:
         return text("We could not find index.html")
 
 
-@app.get("/pics")
-async def get_pics(request) -> HTTPResponse:
+@app.get("/graphs")
+async def get_graphs(request) -> HTTPResponse:
     try:
         with open(CURR_PATH.joinpath('./pics.html'), 'r', encoding="utf-8") as f:
             index_data = f.read()
@@ -42,10 +42,10 @@ async def get_pics(request) -> HTTPResponse:
         return text("We could not find index.html")
 
 
-@app.route('/images/<name>')
-async def hello(request, file_name: str) -> HTTPResponse:
-
+@app.route('/graph/<file_name>')
+async def get_graph(request, file_name: str) -> HTTPResponse:
     _file = IMG_DIR.joinpath(f"{file_name}.png")
+    LOGGER.error(_file)
     if not path.exists(_file):
         return text('File does not exists')
 
@@ -53,4 +53,4 @@ async def hello(request, file_name: str) -> HTTPResponse:
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=8000, access_log=True)
