@@ -2,12 +2,7 @@ from sanic import Sanic, text, html, HTTPResponse, file
 from os import path
 from pathlib import Path
 from middleware import authorize
-import logging
 from plotter import IMG_DIR
-
-
-logging.basicConfig(level=logging.INFO)
-LOGGER = logging.getLogger(__name__)
 
 app = Sanic("LogRate", configure_logging=True)
 
