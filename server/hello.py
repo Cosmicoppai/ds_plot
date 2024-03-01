@@ -1,4 +1,4 @@
-from sanic import Sanic, text, html, HTTPResponse, file
+from sanic import Sanic, text, html, HTTPResponse, file, log
 from os import path
 from pathlib import Path
 from middleware import authorize
@@ -22,7 +22,7 @@ async def index(request) -> HTTPResponse:
             index_data = f.read()
         return html(index_data)
     except FileNotFoundError as e:
-        LOGGER.error(e)
+        log.logger.error(e)
         return text("We could not find index.html")
 
 
@@ -33,14 +33,13 @@ async def get_graphs(request) -> HTTPResponse:
             index_data = f.read()
         return html(index_data)
     except FileNotFoundError as e:
-        LOGGER.error(e)
+        log.logger.error(e)
         return text("We could not find index.html")
 
 
 @app.route('/graph/<file_name>')
 async def get_graph(request, file_name: str) -> HTTPResponse:
     _file = IMG_DIR.joinpath(f"{file_name}.png")
-    LOGGER.error(_file)
     if not path.exists(_file):
         return text('File does not exists')
 
