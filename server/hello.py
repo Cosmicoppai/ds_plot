@@ -1,94 +1,55 @@
 from sanic import Sanic, text, html, HTTPResponse, file
-import os
-import base64
+from os import path
+from pathlib import Path
+from middleware import authorize
+import logging
 
-app = Sanic("MyHelloWorldApp")
-app.extend()
+
+logging.basicConfig(level=logging.INFO)
+LOGGER = logging.getLogger(__name__)
+
+app = Sanic("LogRate")
+
+CURR_PATH = Path(__file__).parent
+IMG_DIR = CURR_PATH.parent.joinpath('plotter/graphs')
+
+# register middleware
+app.register_middleware(authorize, "request")  # attach this middleware to request
 
 # Define a route to serve static files
-app.static('/imgs', './imgs')
-
-TEST_USERS = [
-    {'name': 'kilo', 'password': 'kilo1234'},
-    {'name': 'admin', 'password': 'admin1234'},
-]
-
-AUTH_RESPONSE = HTTPResponse(
-    status=401,
-    headers={'WWW-Authenticate': 'Basic realm="Login Required"'},
-    body='Unauthorized'
-)
-
-
-def check_credentials(content: str):
-    decoded_credentials = base64.b64decode(content).decode('utf-8')
-    username, password = decoded_credentials.split(':')
-
-    for user in TEST_USERS:
-        if username == user['name'] and password == user['password']:
-            return True
-    return False
-
-
-def check_basicauth(request):
-    auth_header = request.headers.get('Authorization')
-    if not auth_header:
-        return False
-    try:
-        auth_type, content = auth_header.split(" ")
-        if auth_type.lower() == 'basic':
-            if check_credentials(content):
-                return True
-            else:
-                raise ValueError("Not valid user")
-        else:
-            raise ValueError("Not basic auth")
-    except (UnicodeDecodeError, ValueError):
-        return False
+app.static("/imgs", CURR_PATH.joinpath('./imgs'), )
 
 
 @app.get("/")
-async def index(request):
-    if not check_basicauth(request):
-        return AUTH_RESPONSE
+async def index(request) -> HTTPResponse:
     try:
-        with open('index.html', 'r') as f:
+        with open(CURR_PATH.joinpath("./index.html"), 'r', encoding="utf-8") as f:
             index_data = f.read()
-        got_file = True
-    except FileNotFoundError as e:
-        got_file = False
-    if got_file:
         return html(index_data)
-    else:
+    except FileNotFoundError as e:
+        LOGGER.error(e)
         return text("We could not find index.html")
 
 
 @app.get("/pics")
-async def get_pics(request):
-    if not check_basicauth(request):
-        return AUTH_RESPONSE
+async def get_pics(request) -> HTTPResponse:
     try:
-        with open('pics.html', 'r') as f:
+        with open(CURR_PATH.joinpath('./pics.html'), 'r', encoding="utf-8") as f:
             index_data = f.read()
-        got_file = True
-    except FileNotFoundError as e:
-        got_file = False
-    if got_file:
         return html(index_data)
-    else:
+    except FileNotFoundError as e:
+        LOGGER.error(e)
         return text("We could not find index.html")
 
 
 @app.route('/images/<name>')
-async def hello(request, name):
-    if not check_basicauth(request):
-        return AUTH_RESPONSE
+async def hello(request, file_name: str) -> HTTPResponse:
 
-    filename = name + '.png'
-    if not os.path.exists(filename):
-        return text(f'{filename} does not exists')
+    _file = IMG_DIR.joinpath(f"{file_name}.png")
+    if not path.exists(_file):
+        return text('File does not exists')
 
-    return await file(filename)
+    return await file(_file)
 
 
 if __name__ == '__main__':

@@ -76,7 +76,7 @@ def plot_time_vs_status(data: List[Tuple[int, int]], output_file_name: str, time
     figure = plt.gcf()
     figure.set_size_inches(18.5, 10.5)
 
-    figure.savefig(f'{output_file_name}.png', bbox_inches='tight', dpi=100)
+    figure.savefig(output_file_name, bbox_inches='tight', dpi=100)
 
     # Show the plot
     plt.show()
