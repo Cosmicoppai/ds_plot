@@ -76,6 +76,7 @@ def plot_time_vs_status(data: List[Tuple[int, int]], output_file_name: str, time
     # Add ticks every hour
     ax.xaxis.set_minor_locator(mdates.HourLocator(interval=1, tz=timezone))
     ax.xaxis.set_minor_formatter(mdates.DateFormatter('%H:%M', timezone))
+    ax.grid(True, which='minor', axis='x', linestyle="--", linewidth=0.5)  # Show dotted grid(guidelines) for minor ticks
 
     # Add date and time on start and end of the graph
     ax.xaxis.set_major_locator(FixedLocator([mdates.date2num(x[0]), mdates.date2num(x[-1])]))
