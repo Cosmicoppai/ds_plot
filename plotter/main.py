@@ -40,7 +40,7 @@ def main():
     parser.add_argument("--time_window", required=False, help="Size of time window", default=24, type=int)
     parser.add_argument("--output", required=False, help="Output file name", default=f"plot_output_{time.time()}.png")
     parser.add_argument("--current_time", required=False, help="current time in epoch format", default=int(time.time()), type=int)
-    parser.add_argument("--time_res", required=False, help="Time Resolution in seconds", default=3600, type=int)
+    parser.add_argument("--time_res", required=False, help="Time Resolution in seconds", default=120, type=int)
     args = parser.parse_args()
 
     file_name = args.filename

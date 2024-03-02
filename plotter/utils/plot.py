@@ -8,6 +8,7 @@ import time
 from .logger import LOGGER
 import heapq
 from pathlib import Path
+from matplotlib.ticker import FixedLocator
 
 IMG_DIR = Path(__file__).parent.parent.joinpath('./graphs')
 
@@ -72,7 +73,20 @@ def plot_time_vs_status(data: List[Tuple[int, int]], output_file_name: str, time
 
     ax.margins(x=0, y=0)
 
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d %H:%M', timezone))
+    # Add ticks every hour
+    ax.xaxis.set_minor_locator(mdates.HourLocator(interval=1, tz=timezone))
+    ax.xaxis.set_minor_formatter(mdates.DateFormatter('%H:%M', timezone))
+
+    # Add date and time on start and end of the graph
+    ax.xaxis.set_major_locator(FixedLocator([mdates.date2num(x[0]), mdates.date2num(x[-1])]))
+
+    # To avoid overlapping
+    fig.autofmt_xdate(rotation=45)  # To avoid overlapping
+
+    _major_ticks = set(round(m_tick, 3) for m_tick in ax.xaxis.get_majorticklocs())
+    for tick in ax.xaxis.get_minor_ticks():
+        if round(tick.get_loc(), 3) in _major_ticks:  # If the minor tick is at the same location as a major tick
+            tick.set_visible(False)
 
     mng = plt.get_current_fig_manager()
     mng.resize(*mng.window.maxsize())
