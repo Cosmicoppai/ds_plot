@@ -9,18 +9,20 @@ from .cache import lru_cache_ttl
 app = Sanic("LogRate", configure_logging=True)
 
 CURR_PATH = Path(__file__).parent
+TEMPLATE_DIR = CURR_PATH.joinpath('./templates')
+ASSETS_DIR = CURR_PATH.joinpath('./assets')
 
 # register middleware
 app.register_middleware(authorize, "request")  # attach this middleware to request
 
 # Define a route to serve static files
-app.static("/imgs", CURR_PATH.joinpath('./imgs'), )
+app.static("/static", ASSETS_DIR, )
 
 
 @app.get("/")
 async def index(request) -> HTTPResponse:
     try:
-        with open(CURR_PATH.joinpath("./index.html"), 'r', encoding="utf-8") as f:
+        with open(TEMPLATE_DIR.joinpath("./index.html"), 'r', encoding="utf-8") as f:
             index_data = f.read()
         return html(index_data)
     except FileNotFoundError as e:
@@ -31,7 +33,7 @@ async def index(request) -> HTTPResponse:
 @app.get("/graphs")
 async def get_graphs(request) -> HTTPResponse:
     try:
-        with open(CURR_PATH.joinpath('./pics.html'), 'r', encoding="utf-8") as f:
+        with open(TEMPLATE_DIR.joinpath('./pics.html'), 'r', encoding="utf-8") as f:
             index_data = f.read()
         return html(index_data)
     except FileNotFoundError as e:
