@@ -1,7 +1,6 @@
 import argparse
 from typing import List, Tuple
 from utils.logger import LOGGER
-from apachelogs import LogParser
 from utils.plot import plot_time_vs_status
 import time
 from utils.timezone_helper import LogTimeZone
@@ -10,9 +9,6 @@ from os import path
 from io import BytesIO
 import re
 from datetime import datetime
-
-
-PARSER = LogParser("%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"")
 
 TZ = LogTimeZone()
 
@@ -41,25 +37,6 @@ def parse_apache_log(logs: str) -> List[Tuple[int, int]]:
             LOGGER.error(f"Error parsing log line: {match} - {e}")
             log_output.append(("ERROR", "ERROR"))
             continue
-
-    # for idx, log in enumerate(logs):
-    #     try:
-    #         if not log:
-    #             continue
-    #         '''76.191.29.250 - - [01/Mar/2024:00:00:01 +0100] "GET /reddit/search/comment/?&subreddit=SuicideWatch&before=574h&after=575h&sort=desc HTTP/1.1" 200 138899 "-" "python-requests/2.31.0"'''
-    #         # parse using regex
-    #
-    #         parsed_log = PARSER.parse(log)
-    #         if idx == 0:
-    #             TZ.time_zone_offset = int(parsed_log.request_time.utcoffset().total_seconds())
-    #
-    #         timestamp: int = int(parsed_log.request_time.timestamp())
-    #         status_code: int = parsed_log.final_status
-    #         log_output.append((int(timestamp), int(status_code)))
-    #     except Exception as e:
-    #         LOGGER.error(f"Error parsing log line: {log} - {e}")
-    #         log_output.append(("ERROR", "ERROR"))
-    #         continue
 
     return log_output
 
@@ -97,6 +74,4 @@ def create_graph(file_name: str | Path = DEFAULT_DIR.joinpath('access.log'),
 
 
 if __name__ == "__main__":
-    import cProfile
-    # cProfile.run('create_graph(save_file=False, show_plot=False)', sort='cumtime')
     create_graph(save_file=False, show_plot=True)
