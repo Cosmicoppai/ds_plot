@@ -9,12 +9,14 @@ from .logger import LOGGER
 import heapq
 from pathlib import Path
 from matplotlib.ticker import FixedLocator
+from io import BytesIO
 
 IMG_DIR = Path(__file__).parent.parent.joinpath('./graphs')
 
 
 def plot_time_vs_status(data: List[Tuple[int, int]], output_file_name: str, time_window_in_hrs: int = 24,
-                        current_time=int(time.time()), timezone=datetime.timezone.utc, time_res_in_sec=120) -> None:
+                        current_time: int = int(time.time()), timezone: datetime = datetime.timezone.utc,
+                        time_res_in_sec: int = 120, save_file: bool = False, show_plot: bool = False) -> BytesIO | Path:
 
     """
     data : [(timestamp, http_status_code), ...] List of timestamp and http status code tuples
@@ -31,7 +33,7 @@ def plot_time_vs_status(data: List[Tuple[int, int]], output_file_name: str, time
 
     if len(filtered_data) == 0:
         LOGGER.error("No data available for the given time window")
-        return
+        raise ValueError("No data available for the given time window")
 
     no_of_intervals_in_hr = 3600 // time_res_in_sec
 
@@ -94,7 +96,13 @@ def plot_time_vs_status(data: List[Tuple[int, int]], output_file_name: str, time
     figure = plt.gcf()
     figure.set_size_inches(18.5, 10.5)
 
-    figure.savefig(IMG_DIR.joinpath(output_file_name), bbox_inches='tight', dpi=100)
-
-    # Show the plot
-    plt.show()
+    if save_file:
+        _file_path = IMG_DIR.joinpath(output_file_name)
+        figure.savefig(_file_path, bbox_inches='tight', dpi=100)
+        if show_plot:
+            plt.show()
+        return _file_path
+    else:
+        b = BytesIO()
+        plt.savefig(b, format='png')
+        return b

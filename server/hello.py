@@ -2,7 +2,9 @@ from sanic import Sanic, text, html, HTTPResponse, file, log
 from os import path
 from pathlib import Path
 from .middleware import authorize
-from plotter import IMG_DIR
+from plotter import IMG_DIR, create_graph
+from io import BytesIO
+from .cache import lru_cache_ttl
 
 app = Sanic("LogRate", configure_logging=True)
 
@@ -37,10 +39,30 @@ async def get_graphs(request) -> HTTPResponse:
         return text("We could not find index.html")
 
 
-@app.route('/graph/<file_name>')
+@app.get('/graph/<file_name>')
 async def get_graph(request, file_name: str) -> HTTPResponse:
     _file = IMG_DIR.joinpath(f"{file_name}.png")
     if not path.exists(_file):
         return text('File does not exists')
 
     return await file(_file)
+
+
+@app.get("/graph")
+async def get_latest_graph(request) -> HTTPResponse:
+    try:
+        # return serve the binary file
+        _figure: BytesIO = _get_graph()
+        return HTTPResponse(body=_figure.getvalue(), content_type="image/png", status=200)
+    except FileNotFoundError as e:
+        log.logger.error(e)
+        return text(str(e))
+    except ValueError as e:
+        log.logger.error(e)
+        return text(str(e))
+
+
+@lru_cache_ttl()
+def _get_graph() -> BytesIO:
+    _figure: BytesIO = create_graph(save_file=False)
+    return _figure
