@@ -1,5 +1,4 @@
-from sanic import Sanic, text, html, HTTPResponse, file, log
-from os import path
+from sanic import Sanic, text, html, HTTPResponse, log
 from pathlib import Path
 from .middleware import authorize
 from plotter import IMG_DIR, create_graph
@@ -30,7 +29,7 @@ async def index(request) -> HTTPResponse:
         return text("We could not find index.html")
 
 
-@app.get("/graphs")
+@app.get("/log_graph")
 async def get_graphs(request) -> HTTPResponse:
     try:
         with open(TEMPLATE_DIR.joinpath('./pics.html'), 'r', encoding="utf-8") as f:
@@ -39,16 +38,6 @@ async def get_graphs(request) -> HTTPResponse:
     except FileNotFoundError as e:
         log.logger.error(e)
         return text("We could not find index.html")
-
-
-@app.get('/graph/<file_name>')
-async def get_graph(request, file_name: str) -> HTTPResponse:
-    _file = IMG_DIR.joinpath(f"{file_name}.png")
-    if not path.exists(_file):
-        return text('File does not exists')
-
-    return await file(_file)
-
 
 @app.get("/graph")
 async def get_latest_graph(request) -> HTTPResponse:

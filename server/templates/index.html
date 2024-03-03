@@ -4,92 +4,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/style.css">
     <title>CatLogs 🐾</title>
-    <style>
-
-    </style>
-
+</head>
+<style>
+    body {
+  background-color: #222;
+}
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+#loader {
+    display: block;
+    position: relative;
+    left: 50%;
+    top: 50%;
+    width: 150px;
+    height: 150px;
+    margin: -75px 0 0 -75px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: #9370DB;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
+#loader:before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: #BA55D3;
+    -webkit-animation: spin 3s linear infinite;
+    animation: spin 3s linear infinite;
+}
+#loader:after {
+    content: "";
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: #FF00FF;
+    -webkit-animation: spin 1.5s linear infinite;
+    animation: spin 1.5s linear infinite;
+}
+@-webkit-keyframes spin {
+    0%   {
+        -webkit-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+@keyframes spin {
+    0%   {
+        -webkit-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+</style>
 <body>
-    <!-- HEADER -->
-    <section class="h-header">
-        <img class='h-hlogo' src="/static/imgs/logo.png" alt="logo">
-        <div class="h-hcenter">
-            <a href="/">
-                <div class="h-selected">Home</div>
-            </a>
-            <a href="/graphs">
-                <div>Pics</div>
-            </a>
-            <div>Contact</div>
-            <div>About</div>
-        </div>
-        <div class="h-hend">
-            <div>⚙️</div>
-            <div>📣</div>
-            <div class="h-login">🔐 Login</div>
-        </div>
+<div id="preloader">
+  <div id="loader"></div>
+</div>
+<div id="content">
+    <section class="log-graph">
+        <img src="/graph" alt="log-graph">
     </section>
-
-    <!-- SECTION 1 -->
-    <section class="h-s1">
-        <div class="h-part1">
-            <div class="h-alert">Turning Data into Laughter Insights!</div>
-            <div class="h-title">We give meaning to your data, <span class="h-red">Visualize what u collect</span></div>
-            <div class="h-desc">"Unlock insights with our powerful data analysis platform. Simplify complexity, make
-                informed
-                decisions, and elevate your business effortlessly."</div>
-            <div class="h-buttons">
-                <div class="h-main-but">Get Started</div>
-                <div class="h-sec-but">More Info</div>
-            </div>
-            <div>
-                <div class="h-stats">
-                    <div class="h-stat">
-                        <h3>3,000+</h3>
-                        <div>Customers</div>
-                    </div>
-                    <div class="h-stat">
-                        <h3>8,000+</h3>
-                        <div>Analysis</div>
-                    </div>
-                    <div class="h-stat">
-                        <h3>1,000+</h3>
-                        <div>Ratings</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <img class="h-homeimg" src="/static/imgs/home.png" alt="analysis">
-    </section>
-
-    <!-- PREVIOUS WORK -->
-    <section class="h-s2">
-
-    </section>
-
-    <!--  FOOTER -->
-    <section class="h-footer">
-        <div class="h-fstart" >
-            <a href="/"> <img class="h-flogo" src="/static/imgs/logo.png" alt=""></a>
-            <div class="h-fdesc" >Analysis like never before</div>
-        </div>
-
-        <div class="h-fcols">
-            <div class="h-fcol">
-                <div class="h-ftitle">Menu</div>
-                <a href="/">Home</a>
-                <a href="/pics">Pics</a>
-            </div>
-            <div class="h-fcol">
-                <div class="h-ftitle">Social</div>
-                <div>📘 Facebook </div>
-                <div>📸 Instagram </div>
-                <div>🔗 LinkedIn </div>
-            </div>
-        </div>
-    </section>
-
+    </div>
 </body>
+
+<script>
+    // hide the loader when image from /graph is loaded
+    document.querySelector('.log-graph img').onload = function() {
+        document.getElementById('preloader').style.display = 'none';
+    }
+
+</script>
 
 </html>
