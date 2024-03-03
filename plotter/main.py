@@ -8,7 +8,7 @@ from pathlib import Path
 from os import path
 from io import BytesIO
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 TZ = LogTimeZone()
 
@@ -16,23 +16,37 @@ DEFAULT_DIR = Path(__file__).parent.joinpath('./logs')
 
 
 def parse_apache_log(logs: str) -> List[Tuple[int, int]]:
-    pattern = r'\[(.*?)\].*?HTTP\/1\.1" (\d{3})'
+    pattern = r'\[(\d{2})/(\w{3})/(\d{4}):(\d{2}):(\d{2}):(\d{2}) (\+\d{4})\].*?HTTP\/1\.1" (\d{3})'
     matches = re.findall(pattern, logs)
+    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
     log_output = []
+
+    _time_start = datetime(1970, 1, 1)
 
     for idx, match in enumerate(matches):
         try:
             if not match:
                 continue
+            day, month, year, hour, minute, second, timezone_offset, status_code = match
 
-            _date = datetime.strptime(match[0], "%d/%b/%Y:%H:%M:%S %z")
-            timestamp: int = int(_date.timestamp())
-            status_code: int = int(match[1])
+            month_num = months.index(month) + 1
+
+            _date = datetime(int(year), month_num, int(day), int(hour), int(minute), int(second))
+
+            tz_offset = int(timezone_offset[1:3]) * 3600 + int(timezone_offset[3:]) * 60
+
+            timestamp = (_date - _time_start) // timedelta(seconds=1)
+            if timezone_offset[0] == '-':
+                timestamp += tz_offset
+            elif timezone_offset[0] == '+':
+                timestamp -= tz_offset
+
+            status_code: int = int(status_code)
             log_output.append((timestamp, status_code))
 
             if idx == 0:
-                TZ.time_zone_offset = int(_date.utcoffset().total_seconds())
+                TZ.time_zone_offset = tz_offset
         except Exception as e:
             LOGGER.error(f"Error parsing log line: {match} - {e}")
             log_output.append(("ERROR", "ERROR"))
@@ -74,4 +88,6 @@ def create_graph(file_name: str | Path = DEFAULT_DIR.joinpath('access.log'),
 
 
 if __name__ == "__main__":
-    create_graph(save_file=False, show_plot=True)
+    start = time.time()
+    create_graph(save_file=False, show_plot=False)
+    print(time.time() - start)
