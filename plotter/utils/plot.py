@@ -95,14 +95,12 @@ def plot_time_vs_status(data: List[Tuple[int, int]], output_file_name: str, time
     mng.resize(*mng.window.maxsize())
     figure = plt.gcf()
     figure.set_size_inches(18.5, 10.5)
+    figure.tight_layout()
 
-    if save_file:
-        _file_path = IMG_DIR.joinpath(output_file_name)
-        figure.savefig(_file_path, bbox_inches='tight', dpi=100)
-        if show_plot:
-            plt.show()
-        return _file_path
-    else:
-        b = BytesIO()
-        plt.savefig(b, format='png')
-        return b
+    _file_loc = IMG_DIR.joinpath(output_file_name) if save_file else BytesIO()
+    figure.savefig(_file_loc, format='png', dpi=125)
+
+    if show_plot:
+        plt.show()
+
+    return _file_loc

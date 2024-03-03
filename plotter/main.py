@@ -8,6 +8,8 @@ from utils.timezone_helper import LogTimeZone
 from pathlib import Path
 from os import path
 from io import BytesIO
+import re
+from datetime import datetime
 
 
 PARSER = LogParser("%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"")
@@ -17,24 +19,47 @@ TZ = LogTimeZone()
 DEFAULT_DIR = Path(__file__).parent.joinpath('./logs')
 
 
-def parse_apache_log(logs: List[str]) -> List[Tuple[int, int]]:
+def parse_apache_log(logs: str) -> List[Tuple[int, int]]:
+    pattern = r'\[(.*?)\].*?HTTP\/1\.1" (\d{3})'
+    matches = re.findall(pattern, logs)
+
     log_output = []
 
-    for idx, log in enumerate(logs):
+    for idx, match in enumerate(matches):
         try:
-            if not log:
+            if not match:
                 continue
-            parsed_log = PARSER.parse(log)
-            if idx == 0:
-                TZ.time_zone_offset = int(parsed_log.request_time.utcoffset().total_seconds())
 
-            timestamp: int = int(parsed_log.request_time.timestamp())
-            status_code: int = parsed_log.final_status
-            log_output.append((int(timestamp), int(status_code)))
+            _date = datetime.strptime(match[0], "%d/%b/%Y:%H:%M:%S %z")
+            timestamp: int = int(_date.timestamp())
+            status_code: int = int(match[1])
+            log_output.append((timestamp, status_code))
+
+            if idx == 0:
+                TZ.time_zone_offset = int(_date.utcoffset().total_seconds())
         except Exception as e:
-            LOGGER.error(f"Error parsing log line: {log} - {e}")
+            LOGGER.error(f"Error parsing log line: {match} - {e}")
             log_output.append(("ERROR", "ERROR"))
             continue
+
+    # for idx, log in enumerate(logs):
+    #     try:
+    #         if not log:
+    #             continue
+    #         '''76.191.29.250 - - [01/Mar/2024:00:00:01 +0100] "GET /reddit/search/comment/?&subreddit=SuicideWatch&before=574h&after=575h&sort=desc HTTP/1.1" 200 138899 "-" "python-requests/2.31.0"'''
+    #         # parse using regex
+    #
+    #         parsed_log = PARSER.parse(log)
+    #         if idx == 0:
+    #             TZ.time_zone_offset = int(parsed_log.request_time.utcoffset().total_seconds())
+    #
+    #         timestamp: int = int(parsed_log.request_time.timestamp())
+    #         status_code: int = parsed_log.final_status
+    #         log_output.append((int(timestamp), int(status_code)))
+    #     except Exception as e:
+    #         LOGGER.error(f"Error parsing log line: {log} - {e}")
+    #         log_output.append(("ERROR", "ERROR"))
+    #         continue
 
     return log_output
 
@@ -65,11 +90,13 @@ def create_graph(file_name: str | Path = DEFAULT_DIR.joinpath('access.log'),
 
     with open(file_name, "r") as file:
         file_data = file.read()
-    parsed_log_data = parse_apache_log(file_data.split("\n"))
+    parsed_log_data = parse_apache_log(file_data)
     parsed_log_data = list(filter(lambda x: x[0] != "ERROR" and x[1] != "ERROR", parsed_log_data))
 
     return plot_time_vs_status(parsed_log_data, output_file_name, time_window, current_time, TZ, time_res, save_file=save_file, show_plot=show_plot)
 
 
 if __name__ == "__main__":
-    create_graph(save_file=True, show_plot=True)
+    import cProfile
+    # cProfile.run('create_graph(save_file=False, show_plot=False)', sort='cumtime')
+    create_graph(save_file=False, show_plot=True)
