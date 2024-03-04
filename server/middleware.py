@@ -3,19 +3,15 @@ from .exceptions import InvalidAuthError
 import base64
 
 
-TEST_USERS = [
-    {'name': 'kilo', 'password': 'kilo1234'},
-    {'name': 'admin', 'password': 'admin1234'},
-]
+TEST_USERS = {"kilo": "kilo1234", "admin": "admin1234"}
 
 
 def check_credentials(content: str) -> bool:
     decoded_credentials = base64.b64decode(content).decode('utf-8')
     username, password = decoded_credentials.split(':')
 
-    for user in TEST_USERS:
-        if username == user['name'] and password == user['password']:
-            return True
+    if username in TEST_USERS and TEST_USERS[username] == password:
+        return True
     return False
 
 

@@ -1,7 +1,7 @@
 from sanic import Sanic, text, html, HTTPResponse, log
 from pathlib import Path
 from .middleware import authorize
-from plotter import IMG_DIR, create_graph
+from plotter import create_graph
 from io import BytesIO
 from .cache import lru_cache_ttl
 
@@ -39,6 +39,7 @@ async def get_graphs(request) -> HTTPResponse:
         log.logger.error(e)
         return text("We could not find index.html")
 
+
 @app.get("/graph")
 async def get_latest_graph(request) -> HTTPResponse:
     try:
@@ -49,8 +50,11 @@ async def get_latest_graph(request) -> HTTPResponse:
         log.logger.error(e)
         return text(str(e))
     except ValueError as e:
+        _file_data = None
+        with open(ASSETS_DIR.joinpath("imgs/no_data.png"), 'rb') as f:
+            _file_data = f.read()
         log.logger.error(e)
-        return text(str(e))
+        return HTTPResponse(body=_file_data, content_type="image/png", status=404)
 
 
 @lru_cache_ttl()
