@@ -76,7 +76,7 @@ def create_graph(file_name: str | Path = DEFAULT_DIR.joinpath('access.log'),
     file_name = file_name or args.filename
     time_window = time_window or args.time_window
     output_file_name = output or args.output
-    current_time = 1709334002 or current_time or args.current_time  # @TODO:@CosmicOppai Remove this hardcoded value
+    current_time = current_time or args.current_time
     time_res = time_res or args.time_res
 
     with open(file_name, "r") as file:
