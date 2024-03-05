@@ -1,0 +1,12 @@
+[Unit]
+Description=Sanic Server
+After=network.target
+
+[Service]
+User=sanic-www
+WorkingDirectory=/home/sanic-www/log-helper
+ExecStart=/usr/bin/env python3 main.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
