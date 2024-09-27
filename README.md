@@ -24,3 +24,8 @@ python main.py
 --current_time: Current time to be used for the graph
 --time_res: Time resolution for the graph
 ```
+
+# OutPut
+
+![image](https://github.com/user-attachments/assets/7a9073a8-6b16-4097-92aa-6fa1f2ef1c08)
+
