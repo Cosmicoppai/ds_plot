@@ -1,3 +1,5 @@
+# Apache Log Visualizer
+
 # Installation
 
 ```bash
